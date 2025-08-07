@@ -29,6 +29,8 @@ export default function SignInPage() {
     setIsLoading(true)
     setError("")
 
+    console.log("🔐 Attempting sign in with:", { email, password: password ? "***" : "empty" })
+
     try {
       const result = await signIn("credentials", {
         email,
@@ -36,17 +38,27 @@ export default function SignInPage() {
         redirect: false,
       })
 
+      console.log("📝 Sign in result:", result)
+
       if (result?.error) {
+        console.error("❌ Sign in error:", result.error)
         setError("Invalid email or password. Please try again.")
-      } else {
+      } else if (result?.ok) {
+        console.log("✅ Sign in successful")
         const session = await getSession()
-        if (session?.user?.role === "admin") {
+        console.log("📋 Session:", session)
+        
+        if ((session?.user as any)?.role === "admin") {
           router.push("/admin")
         } else {
           router.push("/")
         }
+      } else {
+        console.log("⚠️  Sign in result unclear:", result)
+        setError("Something went wrong. Please try again.")
       }
     } catch (error) {
+      console.error("❌ Sign in exception:", error)
       setError("Something went wrong. Please try again.")
     } finally {
       setIsLoading(false)
@@ -56,8 +68,28 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true)
     try {
-      await signIn("google", { callbackUrl: "/" })
+      console.log("🌐 Attempting Google sign in...")
+      const result = await signIn("google", { callbackUrl: "/", redirect: false })
+      
+      if (result?.error) {
+        console.error("❌ Google sign-in error:", result.error)
+        if (result.error === "OAuthSignin") {
+          setError("Google OAuth is not configured. Please use email/password login or contact administrator.")
+        } else if (result.error === "redirect_uri_mismatch") {
+          setError("Google OAuth redirect URI mismatch. Please check Google Cloud Console configuration.")
+        } else if (result.error === "access_denied") {
+          setError("Access denied. Please make sure you're a test user or the app is published.")
+        } else if (result.error === "invalid_client") {
+          setError("Invalid Google OAuth credentials. Please check your configuration.")
+        } else {
+          setError(`Google sign-in failed: ${result.error}. Please try again.`)
+        }
+      } else if (result?.ok) {
+        console.log("✅ Google sign-in successful")
+        window.location.href = "/"
+      }
     } catch (error) {
+      console.error("❌ Google sign-in exception:", error)
       setError("Google sign-in failed. Please try again.")
     } finally {
       setIsGoogleLoading(false)

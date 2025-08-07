@@ -111,6 +111,9 @@ export default function HomePage() {
               <Link href="/contact" className="text-sl-black hover:text-sl-brown transition-colors">
                 Contact
               </Link>
+              <Link href="/admin/signin" className="text-sl-black/60 hover:text-sl-brown transition-colors text-sm">
+                Admin
+              </Link>
             </nav>
 
             <div className="flex items-center space-x-4">

@@ -45,6 +45,8 @@ export default function SignUpPage() {
     setError("")
     setSuccess("")
 
+    console.log("📝 Attempting signup with:", { name, email, password: password ? "***" : "empty" })
+
     if (!acceptTerms) {
       setError("Please accept the Terms of Service and Privacy Policy")
       setIsLoading(false)
@@ -64,6 +66,7 @@ export default function SignUpPage() {
     }
 
     try {
+      console.log("📡 Sending signup request...")
       const response = await fetch("/api/auth/signup", {
         method: "POST",
         headers: {
@@ -72,10 +75,14 @@ export default function SignUpPage() {
         body: JSON.stringify({ name, email, password }),
       })
 
+      console.log("📥 Signup response status:", response.status)
       const data = await response.json()
+      console.log("📥 Signup response data:", data)
 
       if (response.ok) {
         setSuccess("Account created successfully! Signing you in...")
+        console.log("✅ Account created, attempting auto sign in...")
+        
         // Auto sign in after successful registration
         const result = await signIn("credentials", {
           email,
@@ -83,13 +90,21 @@ export default function SignUpPage() {
           redirect: false,
         })
 
+        console.log("🔐 Auto sign in result:", result)
+
         if (result?.ok) {
+          console.log("✅ Auto sign in successful")
           router.push("/")
+        } else {
+          console.log("⚠️  Auto sign in failed, user can sign in manually")
+          setSuccess("Account created successfully! You can now sign in.")
         }
       } else {
+        console.error("❌ Signup failed:", data.error)
         setError(data.error || "Something went wrong")
       }
     } catch (error) {
+      console.error("❌ Signup exception:", error)
       setError("Something went wrong. Please try again.")
     } finally {
       setIsLoading(false)
@@ -99,8 +114,10 @@ export default function SignUpPage() {
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true)
     try {
+      console.log("🌐 Attempting Google sign up...")
       await signIn("google", { callbackUrl: "/" })
     } catch (error) {
+      console.error("❌ Google sign-up error:", error)
       setError("Google sign-up failed. Please try again.")
     } finally {
       setIsGoogleLoading(false)

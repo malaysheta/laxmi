@@ -21,10 +21,46 @@ export default function ContactPage() {
     message: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle")
+  const [submitMessage, setSubmitMessage] = useState("")
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log("Form submitted:", formData)
+    setIsSubmitting(true)
+    setSubmitStatus("idle")
+    setSubmitMessage("")
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      })
+
+      const data = await response.json()
+
+      if (response.ok) {
+        setSubmitStatus("success")
+        setSubmitMessage(data.message)
+        setFormData({
+          fullName: "",
+          email: "",
+          phone: "",
+          message: "",
+        })
+      } else {
+        setSubmitStatus("error")
+        setSubmitMessage(data.error || "Failed to send message. Please try again.")
+      }
+    } catch (error) {
+      setSubmitStatus("error")
+      setSubmitMessage("Failed to send message. Please try again.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -208,8 +244,24 @@ export default function ContactPage() {
                     />
                   </div>
 
-                  <Button type="submit" className="w-full bg-sl-brown text-white hover:bg-sl-brown/90 py-3 text-lg">
-                    Send Message
+                  {submitStatus === "success" && (
+                    <div className="p-4 bg-green-100 border border-green-300 rounded-lg">
+                      <p className="text-green-800">{submitMessage}</p>
+                    </div>
+                  )}
+                  
+                  {submitStatus === "error" && (
+                    <div className="p-4 bg-red-100 border border-red-300 rounded-lg">
+                      <p className="text-red-800">{submitMessage}</p>
+                    </div>
+                  )}
+
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-sl-brown text-white hover:bg-sl-brown/90 py-3 text-lg"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
               </CardContent>
