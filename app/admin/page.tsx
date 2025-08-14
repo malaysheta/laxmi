@@ -54,7 +54,7 @@ interface Contact {
 }
 
 // Define form data type
-interface FormData {
+interface TeamFormData {
   name: string;
   position: string;
   experience: string;
@@ -71,13 +71,14 @@ export default function AdminDashboard() {
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [editingMember, setEditingMember] = useState<TeamMember | null>(null)
-  const [formData, setFormData] = useState<FormData>({
+  const [formData, setFormData] = useState<TeamFormData>({
     name: "",
     position: "",
     experience: "",
     photo: "",
     specialization: "",
   })
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
 
   useEffect(() => {
     if (status === "loading") return
@@ -142,7 +143,7 @@ export default function AdminDashboard() {
       alert("Please fill in all required fields")
       return
     }
-    if (formData.photo && !validatePhotoUrl(formData.photo)) {
+    if (!photoFile && formData.photo && !validatePhotoUrl(formData.photo)) {
       alert("Please provide a valid image URL")
       return
     }
@@ -150,16 +151,23 @@ export default function AdminDashboard() {
     try {
       const url = editingMember ? `/api/team/${editingMember._id}` : "/api/team"
       const method = editingMember ? "PUT" : "POST"
-      const response = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      })
+      const body = new FormData()
+      body.append("name", formData.name)
+      body.append("position", formData.position)
+      body.append("experience", formData.experience)
+      body.append("specialization", formData.specialization)
+      if (photoFile) {
+        body.append("photoFile", photoFile)
+      } else if (formData.photo) {
+        body.append("photo", formData.photo)
+      }
+      const response = await fetch(url, { method, body })
       if ((method === "POST" && response.status === 201) || (method === "PUT" && response.status === 200)) {
         await fetchTeamMembers()
         setIsDialogOpen(false)
         setEditingMember(null)
         setFormData({ name: "", position: "", experience: "", photo: "", specialization: "" })
+        setPhotoFile(null)
         alert(editingMember ? "Team member updated" : "Team member added")
       } else {
         alert("Failed to save team member")
@@ -181,6 +189,7 @@ export default function AdminDashboard() {
       photo: member.photo,
       specialization: member.specialization || "",
     })
+    setPhotoFile(null)
     setIsDialogOpen(true)
   }
 
@@ -212,6 +221,7 @@ export default function AdminDashboard() {
       photo: "",
       specialization: "",
     })
+    setPhotoFile(null)
     setIsDialogOpen(true)
   }
 
@@ -464,6 +474,29 @@ export default function AdminDashboard() {
                       onChange={(e) => setFormData({ ...formData, photo: e.target.value })}
                       placeholder="Enter photo URL (optional)"
                     />
+                  </div>
+                  <div>
+                    <Label htmlFor="photoFile">Or upload image</Label>
+                    <Input
+                      id="photoFile"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setPhotoFile(e.target.files && e.target.files[0] ? e.target.files[0] : null)}
+                    />
+                    {(photoFile || formData.photo || editingMember?.photo) && (
+                      <div className="mt-3 flex items-center space-x-3">
+                        <div className="relative w-16 h-16">
+                          <img
+                            src={photoFile ? URL.createObjectURL(photoFile) : (formData.photo || editingMember?.photo || "/placeholder.svg")}
+                            alt="Preview"
+                            className="w-16 h-16 rounded-full object-cover border"
+                          />
+                        </div>
+                        {photoFile && (
+                          <span className="text-sm text-gray-600 truncate">{photoFile.name}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="specialization">Specialization</Label>

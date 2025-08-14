@@ -1,4 +1,5 @@
 "use client"
+import CountUp from "react-countup";
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -111,9 +112,6 @@ export default function HomePage() {
               <Link href="/contact" className="text-sl-black hover:text-sl-brown transition-colors">
                 Contact
               </Link>
-              <Link href="/admin/signin" className="text-sl-black/60 hover:text-sl-brown transition-colors text-sm">
-                Admin
-              </Link>
             </nav>
 
             <div className="flex items-center space-x-4">
@@ -165,55 +163,70 @@ export default function HomePage() {
       </section>
 
       {/* Quick Glimpse Section */}
-      <section className="py-20 bg-sl-gray">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-sl-black mb-4">Quick Glimpse</h2>
-            <p className="text-xl text-sl-brown max-w-2xl mx-auto">
-              We are a leading financial services firm dedicated to providing the best solutions for our clients.
-            </p>
+     
+
+<section className="py-20 bg-sl-gray">
+  <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="text-center mb-16">
+      <h2 className="text-4xl font-bold text-sl-black mb-4">Quick Glimpse</h2>
+      <p className="text-xl text-sl-brown max-w-2xl mx-auto">
+        We are a leading financial services firm dedicated to providing the best solutions for our clients.
+      </p>
+    </div>
+
+    {/* First row */}
+    <div className="grid md:grid-cols-3 gap-8 mb-12">
+      <Card className="bg-white border-sl-brown/20 text-center p-8">
+        <CardContent className="pt-6">
+          <div className="text-4xl font-bold text-sl-brown mb-2">
+            ₹<CountUp end={100} duration={4} />+ Cr
           </div>
+          <p className="text-sl-black font-semibold">AUM Above</p>
+        </CardContent>
+      </Card>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <Card className="bg-white border-sl-brown/20 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-sl-brown mb-2">₹100+ Cr</div>
-                <p className="text-sl-black font-semibold">AUM Above</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-sl-brown/20 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-sl-brown mb-2">10,000+</div>
-                <p className="text-sl-black font-semibold">Clients</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-sl-brown/20 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-sl-brown mb-2">72+</div>
-                <p className="text-sl-black font-semibold">Advisors</p>
-              </CardContent>
-            </Card>
+      <Card className="bg-white border-sl-brown/20 text-center p-8">
+        <CardContent className="pt-6">
+          <div className="text-4xl font-bold text-sl-brown mb-2">
+            <CountUp end={10000} duration={4} separator="," />+
           </div>
+          <p className="text-sl-black font-semibold">Clients</p>
+        </CardContent>
+      </Card>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="bg-white border-sl-brown/20 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-sl-brown mb-2">3,000+</div>
-                <p className="text-sl-black font-semibold">Families Managed</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-white border-sl-brown/20 text-center p-8">
-              <CardContent className="pt-6">
-                <div className="text-4xl font-bold text-sl-brown mb-2">25+</div>
-                <p className="text-sl-black font-semibold">Years of Excellence</p>
-              </CardContent>
-            </Card>
+      <Card className="bg-white border-sl-brown/20 text-center p-8">
+        <CardContent className="pt-6">
+          <div className="text-4xl font-bold text-sl-brown mb-2">
+            <CountUp end={72} duration={4} />+
           </div>
-        </div>
-      </section>
+          <p className="text-sl-black font-semibold">Advisors</p>
+        </CardContent>
+      </Card>
+    </div>
+
+    {/* Second row */}
+    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+      <Card className="bg-white border-sl-brown/20 text-center p-8">
+        <CardContent className="pt-6">
+          <div className="text-4xl font-bold text-sl-brown mb-2">
+            <CountUp end={3000} duration={4} separator="," />+
+          </div>
+          <p className="text-sl-black font-semibold">Families Managed</p>
+        </CardContent>
+      </Card>
+
+      <Card className="bg-white border-sl-brown/20 text-center p-8">
+        <CardContent className="pt-6">
+          <div className="text-4xl font-bold text-sl-brown mb-2">
+            <CountUp end={25} duration={4} />+
+          </div>
+          <p className="text-sl-black font-semibold">Years of Excellence</p>
+        </CardContent>
+      </Card>
+    </div>
+  </div>
+</section>
+
 
       {/* Our 360° Services */}
       <section id="services" className="py-20 bg-white">
