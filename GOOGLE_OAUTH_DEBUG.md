@@ -16,7 +16,7 @@ Since your credentials are set but Google OAuth is not working, the problem is l
 ### 1. **Enable Google+ API** (Most Common Issue)
 
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your project
+2. Select your projectt
 3. Go to **"APIs & Services" > "Library"**
 4. Search for **"Google+ API"** or **"Google Identity"**
 5. Click on it and click **"Enable"**
